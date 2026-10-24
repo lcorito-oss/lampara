@@ -65,4 +65,4 @@ Los colores base de la interfaz (`--bg`, `--panel`, `--c`, `--shade`, etc.) son 
 
 ## Licencia
 
-Proyecto personal. Agrega aquí la licencia que prefieras (por ejemplo, MIT).
+Proyecto personal.
