@@ -17,7 +17,7 @@
 html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
 .bg{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .6s;
-  background:radial-gradient(circle at 27% 60%,color-mix(in srgb,var(--c) 26%,transparent),transparent 55%)}
+  background:radial-gradient(circle at 50% 62%,color-mix(in srgb,var(--c) 22%,transparent),transparent 58%)}
 body[data-on="true"] .bg{opacity:1}
 .sparks{position:fixed;inset:0;pointer-events:none}
 .p{position:absolute;border-radius:50%;background:var(--c);opacity:0;box-shadow:0 0 6px var(--c)}
@@ -45,9 +45,9 @@ body[data-on="true"] #bulb{fill:color-mix(in srgb,var(--c) 35%,#fff);filter:drop
 #lightRow{transition:opacity .3s}
 body[data-on="false"] #lightRow{opacity:.35;pointer-events:none}
 
-.card{background:linear-gradient(160deg,#171b24,#0f1218);border:1px solid var(--line);border-radius:26px;padding:28px 24px;box-shadow:0 20px 60px #0008;transition:opacity .6s,filter .6s,border-color .6s}
-body[data-on="false"] .card{opacity:.28;filter:blur(2px)}
-body[data-on="true"] .card{border-color:color-mix(in srgb,var(--c) 30%,var(--line))}
+.card{background:linear-gradient(160deg,#171b24,#0f1218);border:1px solid var(--line);border-radius:26px;padding:28px 24px;box-shadow:0 20px 60px #0008;transition:opacity 1s .25s,filter 1s .25s,transform 1s .25s,border-color .6s,box-shadow 1s .25s}
+body[data-on="false"] .card{opacity:0;filter:blur(10px);transform:translateY(10px);visibility:hidden;transition:opacity .9s,filter .9s,transform .9s,visibility 0s .9s}
+body[data-on="true"] .card{border-color:color-mix(in srgb,var(--c) 30%,var(--line));box-shadow:-40px 0 90px -40px color-mix(in srgb,var(--c) 45%,transparent),0 20px 60px #0008}
 h1{font-size:26px;margin:0 0 4px} .sub{font-size:13px;color:var(--muted);margin:0 0 18px}
 .tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:16px}
 .tab{background:none;border:0;color:var(--muted);padding:9px;border-radius:9px;font:inherit;font-size:13px;cursor:pointer}
@@ -107,7 +107,7 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
     </linearGradient>
   </defs>
 
-  <g class="light"><ellipse cx="60" cy="580" rx="125" ry="11" style="fill:var(--c);opacity:.38"/></g>
+  <g class="light"><ellipse cx="400" cy="582" rx="130" ry="11" style="fill:var(--c);opacity:.38"/></g>
 
   <!-- base -->
   <ellipse cx="140" cy="574" rx="82" ry="11" fill="#08090c"/>
@@ -126,7 +126,7 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
   <circle cx="78" cy="385" r="2.5" fill="#2a1d05"/>
 
   <!-- pantalla campana -->
-  <g transform="translate(172 218) rotate(18)">
+  <g transform="translate(204 256) rotate(-40)">
     <g class="light"><polygon points="-56,6 56,6 150,360 -150,360" fill="url(#cone)"/></g>
     <path id="shade" d="M-62,0 C-60,-42 -40,-74 -14,-80 L14,-80 C40,-74 60,-42 62,0 Z"/>
     <path d="M-50,-8 C-46,-38 -30,-60 -10,-70" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="2" stroke-linecap="round"/>
@@ -140,8 +140,8 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
 
   <!-- cadena -->
   <g class="pull" id="pull">
-    <line id="cord" x1="143" y1="214" x2="143" y2="324" stroke="#c9a24a" stroke-width="2.2" stroke-dasharray="1.6 2.6" stroke-linecap="round"/>
-    <path id="knob" d="M143,326 C150,336 151,344 143,348 C135,344 136,336 143,326 Z" fill="url(#brass)" tabindex="0" role="button" aria-label="Jalar la cadena para encender o apagar"/>
+    <line id="cord" x1="196" y1="262" x2="196" y2="372" stroke="#c9a24a" stroke-width="2.2" stroke-dasharray="1.6 2.6" stroke-linecap="round"/>
+    <path id="knob" d="M196,374 C203,384 204,392 196,396 C188,392 189,384 196,374 Z" fill="url(#brass)" tabindex="0" role="button" aria-label="Jalar la cadena para encender o apagar"/>
   </g>
 </svg>
 
