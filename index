@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lámpara de neón</title>
+<style>
+:root{
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:#0b0d12; --panel:#151922; --text:#e7e9ee; --muted:#8b92a3; --line:#2a3040;
+  --c:#ffd27a;      /* color de la luz */
+  --shade:#3b4252;  /* color de la pantalla */
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0b0d12; --panel:#151922; --text:#e7e9ee; --muted:#8b92a3; --line:#2a3040; } }
+:root[data-theme="dark"]{ --bg:#0b0d12; --panel:#151922; --text:#e7e9ee; --muted:#8b92a3; --line:#2a3040; }
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.bg{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;
+  background:radial-gradient(circle at 50% 55%, color-mix(in srgb,var(--c) 30%,transparent), transparent 62%)}
+body[data-on="true"] .bg{opacity:1}
+svg{height:min(86vh,680px);width:auto;max-width:100%;position:relative;touch-action:none}
+.light{opacity:0;transition:opacity .45s}
+body[data-on="true"] .light{opacity:1}
+#bulb{fill:#4a4f5c;transition:fill .3s;filter:none}
+body[data-on="true"] #bulb{fill:var(--c);filter:drop-shadow(0 0 10px var(--c)) drop-shadow(0 0 22px var(--c))}
+#shade{fill:var(--shade);transition:fill .4s}
+.pull{cursor:grab}
+#cord{transform-box:fill-box;transform-origin:top;transition:transform .28s cubic-bezier(.3,1.6,.5,1)}
+#knob{transition:transform .28s cubic-bezier(.3,1.6,.5,1);fill:#e9ecf2}
+.drag #cord,.drag #knob{transition:none}
+#knob:focus-visible{outline:2px solid var(--c);outline-offset:3px}
+.panel{position:fixed;top:max(env(safe-area-inset-top,0px),0px);right:0;margin:16px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;display:grid;gap:10px}
+.row{display:flex;align-items:center;gap:8px}
+.row span{font-size:12px;color:var(--muted);min-width:58px}
+.dot{width:18px;height:18px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .15s,border-color .15s}
+.dot:hover{transform:scale(1.15)}
+.dot.sel{border-color:#fff}
+#lights{transition:opacity .3s}
+body[data-on="false"] #lights{opacity:.35;pointer-events:none}
+.hint{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body data-on="false">
+<div class="bg"></div>
+
+<div class="panel">
+  <div class="row"><span>Lámpara</span><div class="row" id="shades"></div></div>
+  <div class="row" id="lights"><span>Luz</span><div class="row" id="lightDots"></div></div>
+</div>
+
+<svg viewBox="0 0 400 600" role="img" aria-label="Lámpara de escritorio con hilo para encender">
+  <defs>
+    <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color:var(--c);stop-opacity:.7"/>
+      <stop offset=".35" style="stop-color:var(--c);stop-opacity:.22"/>
+      <stop offset="1" style="stop-color:var(--c);stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="dome" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" style="stop-color:color-mix(in srgb,var(--shade) 70%,#fff)"/>
+      <stop offset=".35" style="stop-color:var(--shade)"/>
+      <stop offset="1" style="stop-color:color-mix(in srgb,var(--shade) 25%,#000)"/>
+    </linearGradient>
+    <linearGradient id="baseG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a404d"/><stop offset="1" stop-color="#171a21"/>
+    </linearGradient>
+  </defs>
+
+  <!-- luz en el piso -->
+  <g class="light">
+    <ellipse cx="125" cy="582" rx="115" ry="11" style="fill:var(--c);opacity:.4"/>
+  </g>
+
+  <!-- base -->
+  <ellipse cx="230" cy="574" rx="76" ry="11" fill="#0d0f14"/>
+  <ellipse cx="230" cy="566" rx="76" ry="11" fill="url(#baseG)"/>
+  <ellipse cx="230" cy="566" rx="76" ry="11" fill="none" stroke="#c9a24a" stroke-width="1.2"/>
+  <ellipse cx="230" cy="563" rx="16" ry="3.5" fill="#0d0f14" stroke="#c9a24a" stroke-width=".8"/>
+
+  <!-- brazo fino -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="230,562 190,382 290,215" stroke="#1c2028" stroke-width="5"/>
+    <polyline points="230,562 190,382 290,215" stroke="#454d5e" stroke-width="1"/>
+  </g>
+  <g fill="#14171d" stroke="#c9a24a" stroke-width="1.4">
+    <circle cx="230" cy="562" r="5"/><circle cx="190" cy="382" r="6"/>
+  </g>
+  <circle cx="190" cy="382" r="1.8" fill="#e6c36a"/>
+
+  <!-- pantalla inclinada -->
+  <g transform="translate(290 215) rotate(25)">
+    <g class="light"><polygon points="-52,8 52,8 125,390 -125,390" fill="url(#cone)"/></g>
+    <path id="shade" d="M-58,0 C-58,-66 58,-66 58,0 Z" fill="url(#dome)"/>
+    <path d="M-48,-8 C-44,-38 -20,-52 8,-52" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2" stroke-linecap="round"/>
+    <ellipse cx="0" cy="0" rx="58" ry="8" fill="#0b0d11"/>
+    <ellipse cx="0" cy="0" rx="58" ry="8" fill="none" stroke="#c9a24a" stroke-width="1.1"/>
+    <circle id="bulb" cx="0" cy="4" r="10"/>
+    <rect x="-3" y="-60" width="6" height="8" rx="2" fill="#14171d" stroke="#c9a24a" stroke-width="1"/>
+  </g>
+  <circle cx="290" cy="215" r="5" fill="#14171d" stroke="#c9a24a" stroke-width="1.4"/>
+
+  <!-- hilo -->
+  <g class="pull" id="pull">
+    <line id="cord" x1="334" y1="242" x2="334" y2="332" stroke="#aeb4c2" stroke-width="1"/>
+    <circle id="knob" cx="334" cy="338" r="6" tabindex="0" role="button" aria-label="Jalar el hilo para encender o apagar" stroke="#c9a24a" stroke-width="1.5"/>
+  </g>
+</svg>
+
+<p class="hint" id="hint">Jala el hilo para encender</p>
+
+<script>
+const root = document.documentElement;
+const shades = ["#3b4252","#7a3b3b","#2f5d62","#6b4f2a","#d9d4c7"];
+const lights = ["#ffd27a","#ff5fa2","#5ee7ff","#7dff9b","#b388ff"];
+
+function dots(id, list, varName){
+  const box = document.getElementById(id);
+  list.forEach((col,i)=>{
+    const b = document.createElement("button");
+    b.className = "dot" + (i===0 ? " sel" : "");
+    b.style.background = col;
+    b.setAttribute("aria-label","Color "+(i+1));
+    b.onclick = () => {
+      root.style.setProperty(varName,col);
+      box.querySelectorAll(".dot").forEach(d=>d.classList.remove("sel"));
+      b.classList.add("sel");
+    };
+    box.appendChild(b);
+  });
+}
+dots("shades", shades, "--shade");
+dots("lightDots", lights, "--c");
+
+let on = false;
+function toggle(){
+  on = !on;
+  document.body.dataset.on = on;
+  document.getElementById("hint").textContent = on
+    ? "Elige otro color de luz arriba, o jala el hilo para apagar"
+    : "Jala el hilo para encender";
+}
+
+const knob = document.getElementById("knob"), cord = document.getElementById("cord"),
+      pull = document.getElementById("pull"), svg = document.querySelector("svg");
+function setPull(dy){
+  knob.style.transform = `translateY(${dy}px)`;
+  cord.style.transform = `scaleY(${(90+dy)/90})`;
+}
+let drag=false, y0=0, dy=0;
+knob.addEventListener("pointerdown", e=>{
+  drag=true; y0=e.clientY; dy=0; knob.setPointerCapture(e.pointerId); pull.classList.add("drag");
+});
+knob.addEventListener("pointermove", e=>{
+  if(!drag) return;
+  const k = 600 / svg.getBoundingClientRect().height;
+  dy = Math.max(0, Math.min(40, (e.clientY - y0) * k));
+  setPull(dy);
+});
+knob.addEventListener("pointerup", ()=>{
+  if(!drag) return;
+  drag=false; pull.classList.remove("drag");
+  if(dy>14 || dy<3) toggle();   // jalón o simple clic
+  setPull(0);
+});
+knob.addEventListener("keydown", e=>{
+  if(e.key==="Enter" || e.key===" "){
+    e.preventDefault(); setPull(24); setTimeout(()=>setPull(0),150); toggle();
+  }
+});
+</script>
+</body>
+</html>
