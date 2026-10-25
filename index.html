@@ -9,7 +9,7 @@
   color-scheme: dark; box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
   --bg:#0a0b0f; --panel:#12151c; --field:#0e1117; --text:#eceef3; --muted:#8a91a1; --line:#262c3a;
-  --c:#ffb84a; --shade:#1f232b;
+  --c:#ffb84a; --shade:#ece9e2;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0a0b0f; --panel:#12151c; --field:#0e1117; --text:#eceef3; --muted:#8a91a1; --line:#262c3a; } }
 :root[data-theme="dark"]{ --bg:#0a0b0f; --panel:#12151c; --field:#0e1117; --text:#eceef3; --muted:#8a91a1; --line:#262c3a; }
@@ -28,9 +28,13 @@ body[data-on="true"] .p{animation:fl var(--d) ease-in-out var(--dl) infinite}
 svg{height:min(84vh,660px);width:auto;max-width:100%;justify-self:center;overflow:visible;touch-action:none}
 .light{opacity:0;transition:opacity .5s}
 body[data-on="true"] .light{opacity:1}
-#bulb{fill:#4a4f5c;transition:fill .3s}
-body[data-on="true"] #bulb{fill:color-mix(in srgb,var(--c) 35%,#fff);filter:drop-shadow(0 0 8px var(--c)) drop-shadow(0 0 22px var(--c))}
-#shade{fill:url(#dome)}
+#bulb{fill:#4a4f5c;opacity:0;transition:fill .3s,opacity .3s}
+body[data-on="true"] #bulb{fill:color-mix(in srgb,var(--c) 35%,#fff);opacity:1;filter:drop-shadow(0 0 5px var(--c)) drop-shadow(0 0 14px var(--c))}
+#shade{fill:url(#dome);stroke:color-mix(in srgb,var(--shade) 65%,#000);stroke-width:1}
+.bd{fill:color-mix(in srgb,var(--shade) 80%,#000)}.tp{fill:var(--shade)}
+.arm{stroke:var(--shade);stroke-linecap:round}.armo{stroke:color-mix(in srgb,var(--shade) 65%,#000);stroke-linecap:round}.arm,.armo{fill:none}
+.bd,.tp,.arm,.armo,#shade{transition:fill .4s,stroke .4s}
+.bsh{opacity:.3;transition:opacity .6s}body[data-on="true"] .bsh{opacity:1}
 .pull{cursor:grab}
 #cord{transform-box:fill-box;transform-origin:top;transition:transform .28s cubic-bezier(.3,1.6,.5,1)}
 #knob{transition:transform .28s cubic-bezier(.3,1.6,.5,1)}
@@ -83,7 +87,7 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
 </div>
 
 <main class="stage">
-<svg viewBox="0 0 400 600" role="img" aria-label="Lámpara de escritorio articulada con cadena para encender">
+<svg viewBox="0 0 400 600" role="img" aria-label="Lámpara articulada con resorte y una pelota de juguete al lado">
   <defs>
     <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" style="stop-color:var(--c);stop-opacity:.65"/>
@@ -91,57 +95,82 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
       <stop offset="1" style="stop-color:var(--c);stop-opacity:0"/>
     </linearGradient>
     <linearGradient id="dome" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" style="stop-color:color-mix(in srgb,var(--shade) 60%,#fff)"/>
-      <stop offset=".3" style="stop-color:var(--shade)"/>
-      <stop offset="1" style="stop-color:color-mix(in srgb,var(--shade) 30%,#000)"/>
+      <stop offset="0" style="stop-color:color-mix(in srgb,var(--shade) 80%,#fff)"/>
+      <stop offset=".4" style="stop-color:var(--shade)"/>
+      <stop offset="1" style="stop-color:color-mix(in srgb,var(--shade) 72%,#000)"/>
     </linearGradient>
-    <radialGradient id="inner" cx=".5" cy="1" r="1">
-      <stop offset="0" style="stop-color:var(--c);stop-opacity:.9"/>
-      <stop offset="1" style="stop-color:var(--c);stop-opacity:.1"/>
+    <radialGradient id="ballG" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/>
     </radialGradient>
-    <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f3d98f"/><stop offset="1" stop-color="#8f6a1f"/>
-    </linearGradient>
-    <linearGradient id="baseG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3a404d"/><stop offset="1" stop-color="#14171d"/>
-    </linearGradient>
+    <clipPath id="ballClip"><circle r="26"/></clipPath>
+    <linearGradient id="fadeG" gradientUnits="userSpaceOnUse" x1="0" y1="470" x2="0" y2="590"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
+    <mask id="floorMask" maskUnits="userSpaceOnUse" x="-300" y="0" width="1200" height="600"><rect x="-300" y="0" width="1200" height="600" fill="url(#fadeG)"/></mask>
+    <radialGradient id="pool"><stop offset="0" style="stop-color:var(--c);stop-opacity:.65"/><stop offset=".6" style="stop-color:var(--c);stop-opacity:.3"/><stop offset="1" style="stop-color:var(--c);stop-opacity:0"/></radialGradient>
+    <clipPath id="beamClip"><polygon transform="translate(210 266) rotate(-40)" points="-60,0 60,0 175,460 -175,460"/></clipPath>
+    <linearGradient id="bsh" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".85"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter>
+    <filter id="haze" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <g id="bars">
+      <line x1="125.8" y1="534.4" x2="85.8" y2="393.4"/><line x1="114.2" y1="537.6" x2="74.2" y2="396.6"/>
+      <line x1="85.5" y1="397.4" x2="155.5" y2="237.4"/><line x1="74.5" y1="392.6" x2="144.5" y2="232.6"/>
+    </g>
   </defs>
 
-  <g class="light"><ellipse cx="400" cy="582" rx="130" ry="11" style="fill:var(--c);opacity:.38"/></g>
+  <g class="light" mask="url(#floorMask)"><g transform="translate(210 266) rotate(-40)">
+    <g id="rays" filter="url(#soft)"></g>
+    <polygon points="-60,0 60,0 160,460 -160,460" fill="url(#cone)" opacity=".35"/>
+    <g filter="url(#haze)" style="fill:var(--c);fill-opacity:.14"><ellipse cx="-30" cy="330" rx="70" ry="22"/><ellipse cx="40" cy="390" rx="80" ry="26"/><ellipse cx="-60" cy="250" rx="45" ry="16"/><ellipse cx="60" cy="280" rx="55" ry="18"/></g>
+  </g></g>
+  <g class="light"><ellipse cx="410" cy="580" rx="118" ry="13" fill="url(#pool)" filter="url(#soft)"/></g>
 
   <!-- base -->
-  <ellipse cx="140" cy="574" rx="82" ry="11" fill="#08090c"/>
-  <ellipse cx="140" cy="566" rx="82" ry="11" fill="url(#baseG)"/>
-  <ellipse cx="140" cy="566" rx="82" ry="11" fill="none" stroke="url(#brass)" stroke-width="1.2"/>
-  <rect x="130" y="548" width="20" height="14" rx="3" fill="url(#brass)"/>
+  <ellipse cx="108" cy="582" rx="78" ry="9" fill="#000" opacity=".4"/>
+  <ellipse class="bd" cx="120" cy="574" rx="74" ry="11"/>
+  <ellipse class="tp" cx="120" cy="568" rx="74" ry="11"/>
+  <ellipse cx="120" cy="566" rx="50" ry="6.5" fill="none" stroke="#000" stroke-opacity=".15"/>
+  <rect class="tp" x="106" y="532" width="28" height="34" rx="5"/>
+  <path d="M106,546H134M106,552H134" stroke="#000" stroke-opacity=".15"/>
 
-  <!-- brazo articulado (barras paralelas) -->
-  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="140,552 78,385 172,218" stroke="#2c323e" stroke-width="9"/>
-    <polyline points="140,552 78,385 172,218" stroke="#0b0d11" stroke-width="4.5"/>
+  <!-- brazos paralelos y resorte -->
+  <use href="#bars" class="armo" stroke-width="8"/>
+  <use href="#bars" class="arm" stroke-width="5"/>
+  <path d="M99,440 L105,428.6 96,415.7 107,404.8 98,391.9 109,381 100,368.1 111,357.2 108,345" fill="none" stroke="#7b808c" stroke-width="2" stroke-linejoin="round"/>
+  <g class="tp" stroke="#000" stroke-opacity=".25">
+    <circle cx="120" cy="536" r="9"/><circle cx="80" cy="395" r="9"/>
   </g>
-  <g fill="url(#brass)" stroke="#5a410f" stroke-width=".8">
-    <circle cx="140" cy="552" r="7"/><circle cx="78" cy="385" r="8"/><circle cx="109" cy="468" r="4.5"/>
-  </g>
-  <circle cx="78" cy="385" r="2.5" fill="#2a1d05"/>
+  <g fill="#8a8f99"><circle cx="120" cy="536" r="3"/><circle cx="80" cy="395" r="3"/></g>
 
-  <!-- pantalla campana -->
-  <g transform="translate(204 256) rotate(-40)">
-    <g class="light"><polygon points="-56,6 56,6 150,360 -150,360" fill="url(#cone)"/></g>
-    <path id="shade" d="M-62,0 C-60,-42 -40,-74 -14,-80 L14,-80 C40,-74 60,-42 62,0 Z"/>
-    <path d="M-50,-8 C-46,-38 -30,-60 -10,-70" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="2" stroke-linecap="round"/>
-    <ellipse cx="0" cy="0" rx="62" ry="9" fill="#07080b"/>
-    <path class="light" d="M-56,-2 C-52,-34 -30,-54 0,-54 C30,-54 52,-34 56,-2 Z" fill="url(#inner)"/>
-    <ellipse cx="0" cy="0" rx="62" ry="9" fill="none" stroke="url(#brass)" stroke-width="1.3"/>
-    <circle id="bulb" cx="0" cy="-4" r="9"/>
-    <rect x="-9" y="-88" width="18" height="10" rx="3" fill="url(#brass)"/>
+  <!-- pantalla cónica -->
+  <g transform="translate(210 266) rotate(-40)">
+    
+    <path id="shade" d="M-62,0 L-16,-80 Q0,-86 16,-80 L62,0 Z"/>
+    <path d="M-44,-8 L-14,-70" stroke="#fff" stroke-opacity=".4" stroke-width="3" stroke-linecap="round"/>
+    <g stroke="#000" stroke-opacity=".25" stroke-width="2" stroke-linecap="round">
+      <line x1="-10" y1="-72" x2="10" y2="-72"/><line x1="-13" y1="-64" x2="13" y2="-64"/><line x1="-16" y1="-56" x2="16" y2="-56"/>
+    </g>
+    <ellipse cx="0" cy="0" rx="62" ry="9" style="fill:color-mix(in srgb,var(--shade) 55%,#000)"/>
+    <ellipse class="light" cx="0" cy="0" rx="58" ry="7" style="fill:var(--c)"/>
+    <ellipse cx="0" cy="0" rx="62" ry="9" fill="none" style="stroke:color-mix(in srgb,var(--shade) 70%,#000)" stroke-width="2"/>
+    <circle id="bulb" cx="0" cy="0" r="7"/>
   </g>
-  <circle cx="172" cy="218" r="6" fill="url(#brass)"/>
+  <circle class="tp" cx="150" cy="235" r="9" stroke="#000" stroke-opacity=".25"/><circle cx="150" cy="235" r="3" fill="#8a8f99"/>
 
   <!-- cadena -->
   <g class="pull" id="pull">
-    <line id="cord" x1="196" y1="262" x2="196" y2="372" stroke="#c9a24a" stroke-width="2.2" stroke-dasharray="1.6 2.6" stroke-linecap="round"/>
-    <path id="knob" d="M196,374 C203,384 204,392 196,396 C188,392 189,384 196,374 Z" fill="url(#brass)" tabindex="0" role="button" aria-label="Jalar la cadena para encender o apagar"/>
+    <line id="cord" x1="164" y1="306" x2="164" y2="416" stroke="#9aa0ad" stroke-width="2.2" stroke-dasharray="1.6 2.6" stroke-linecap="round"/>
+    <path id="knob" d="M164,418 C171,428 172,436 164,440 C156,436 157,428 164,418 Z" fill="#c9ccd4" tabindex="0" role="button" aria-label="Jalar la cadena para encender o apagar"/>
+  </g>
+
+  <!-- pelota de juguete -->
+  <g transform="translate(300 556)">
+    <ellipse class="bsh" cx="52" cy="27" rx="60" ry="6" fill="url(#bsh)"/><ellipse cx="0" cy="27" rx="20" ry="3.5" fill="#000" opacity=".35"/>
+    <g clip-path="url(#ballClip)">
+      <circle r="26" fill="#6fd0c0"/>
+      <path d="M-30,-8 Q0,-34 30,-4" fill="none" stroke="#2b3a67" stroke-width="12"/>
+      <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="#ff6b57" stroke="#fff" stroke-width="1.2" transform="translate(-3 8) scale(.85)"/>
+      <circle r="26" fill="url(#ballG)"/>
+      <g class="light"><circle r="26" style="fill:var(--c);fill-opacity:.15"/></g>
+    </g>
   </g>
 </svg>
 
@@ -168,7 +197,7 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
 
 <script>
 const root=document.documentElement;
-const shades=["#1f232b","#7a3b3b","#2f5d62","#6b4f2a","#d9d4c7"];
+const shades=["#ece9e2","#f2b8c6","#9fd3d6","#f3d089","#2a2e37"];
 const lights=["#ffb84a","#ff5fa2","#5ee7ff","#7dff9b","#b388ff"];
 function dots(id,list,v){
   const box=document.getElementById(id);
@@ -210,6 +239,18 @@ knob.addEventListener("pointerup",()=>{
 knob.addEventListener("keydown",e=>{
   if(e.key==="Enter"||e.key===" "){e.preventDefault();setPull(24);setTimeout(()=>setPull(0),150);toggle()}
 });
+
+/* rayos del haz */
+const NS="http://www.w3.org/2000/svg",rays=document.getElementById("rays");
+const R=n=>{const x=Math.sin(n*12.9898)*43758.5453;return x-Math.floor(x)};
+for(let i=0;i<26;i++){
+  const u=(i/25)*2-1,a=u*17*Math.PI/180+(R(i)-.5)*.03,len=460,x0=u*50,w=1+R(i+9)*5;
+  const xe=x0+Math.tan(a)*len,p=document.createElementNS(NS,"polygon");
+  p.setAttribute("points",`${x0-1},0 ${x0+1},0 ${xe+w},${len} ${xe-w},${len}`);
+  p.setAttribute("fill","url(#cone)");
+  p.setAttribute("opacity",((.25+.5*R(i+3))*(1-.4*Math.abs(u))).toFixed(2));
+  rays.appendChild(p);
+}
 
 /* formulario */
 const msg=document.getElementById("msg");
