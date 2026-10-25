@@ -102,7 +102,7 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
 </div>
 
 <main class="stage">
-<svg viewBox="0 0 400 600" role="img" aria-label="Lámpara articulada con resorte y una pelota de juguete al lado">
+<svg viewBox="0 0 400 600" role="group" aria-label="Escena con lámpara articulada y pelota interactiva">
   <defs>
     <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" style="stop-color:var(--c);stop-opacity:.65"/>
@@ -375,7 +375,7 @@ function bounceToy(){toyMotion.classList.remove("bounce");void toyMotion.getBoun
 toyMotion.addEventListener("animationend",()=>toyMotion.classList.remove("bounce"));
 toy.addEventListener("pointerdown",e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();toyStart=svgPoint(e);toyStartX=toyX;toyLastX=toyStart.x;toyMoved=false;toy.setPointerCapture(e.pointerId);toy.classList.add("dragging")});
 toy.addEventListener("pointermove",e=>{if(!toyStart)return;const p=svgPoint(e),delta=p.x-toyStart.x;if(Math.abs(delta)>5)toyMoved=true;if(toyMoved){toyX=clamp(toyStartX+delta,218,355);toyRotation+=(p.x-toyLastX)*1.4;toyLastX=p.x;toy.setAttribute("transform",`translate(${toyX} 556) rotate(${toyRotation})`)}});
-function releaseToy(){if(!toyStart)return;toy.setPointerCapture&&toy.hasPointerCapture&&toy.releasePointerCapture;toy.classList.remove("dragging");if(!toyMoved)bounceToy();toyStart=null}
+function releaseToy(){if(!toyStart)return;toy.classList.remove("dragging");if(!toyMoved)bounceToy();toyStart=null}
 toy.addEventListener("pointerup",releaseToy);toy.addEventListener("pointercancel",releaseToy);
 toy.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();bounceToy()}});
 
