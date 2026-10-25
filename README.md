@@ -86,4 +86,4 @@ Si no ves los cambios después de subir una versión nueva, espera a que la ejec
 
 ## Licencia
 
-Proyecto personal. Agrega aquí la licencia que prefieras (por ejemplo, MIT).
+Proyecto personal.
