@@ -15,18 +15,18 @@
 :root[data-theme="dark"]{ --bg:#0a0b0f; --panel:#12151c; --field:#0e1117; --text:#eceef3; --muted:#8a91a1; --line:#262c3a; }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{background:radial-gradient(ellipse at 50% 36%,#171a24 0,transparent 58%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden;transition:background .7s ease}
+body{background:radial-gradient(ellipse 52rem 40rem at 34% 53%,#26303f 0,#1a202b 42%,transparent 82%),radial-gradient(ellipse 70rem 34rem at 54% 100%,#171c27 0,transparent 78%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden;transition:background .7s ease}
 .bg{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .8s;
   background:radial-gradient(ellipse 38% 34% at 28% 67%,color-mix(in srgb,var(--c) 22%,transparent),transparent 100%),radial-gradient(ellipse 56% 30% at 52% 87%,color-mix(in srgb,var(--c) 10%,#11131a),transparent 100%),radial-gradient(ellipse at 51% 55%,#1b202a 0,transparent 68%)}
 body[data-on="true"] .bg{opacity:1}
-body[data-on="true"]{background:radial-gradient(ellipse at 29% 65%,color-mix(in srgb,var(--c) 10%,#171a24) 0,transparent 52%),radial-gradient(ellipse at 54% 88%,color-mix(in srgb,var(--c) 5%,#171a24) 0,transparent 62%),var(--bg)}
+body[data-on="true"]{background:radial-gradient(ellipse 44rem 34rem at 28% 66%,color-mix(in srgb,var(--c) 16%,#28303c) 0,color-mix(in srgb,var(--c) 7%,#171c26) 48%,transparent 88%),radial-gradient(ellipse 66rem 34rem at 58% 94%,color-mix(in srgb,var(--c) 9%,#171c26) 0,transparent 82%),var(--bg)}
 .sparks{position:fixed;inset:0;pointer-events:none}
 .p{position:absolute;border-radius:50%;background:var(--c);opacity:0;box-shadow:0 0 6px var(--c)}
 body[data-on="true"] .p{animation:fl var(--d) ease-in-out var(--dl) infinite}
 @keyframes fl{0%,100%{opacity:0;transform:translateY(0)}50%{opacity:.8;transform:translateY(-22px)}}
 
 .stage{position:relative;isolation:isolate;min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,380px);gap:clamp(24px,4vw,48px);align-items:center;max-width:1100px;margin:0 auto;padding:clamp(24px,4vw,44px)}
-.stage::before{content:"";position:absolute;z-index:-1;width:70%;aspect-ratio:1;left:8%;top:50%;transform:translateY(-50%);border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 12%,transparent),transparent 68%);filter:blur(14px);opacity:.65;pointer-events:none;transition:background .7s ease,opacity .7s ease}
+.stage::before{content:"";position:absolute;z-index:-1;width:78%;aspect-ratio:1;left:3%;top:51%;transform:translateY(-50%);border-radius:50%;background:radial-gradient(circle,#394556 0,color-mix(in srgb,var(--c) 15%,#252d3a) 22%,#202632 43%,transparent 70%);filter:blur(24px);opacity:.72;pointer-events:none;transition:background .7s ease,opacity .7s ease}
 .stage>svg{height:min(84vh,660px);width:auto;max-width:100%;justify-self:center;overflow:visible;touch-action:none;filter:drop-shadow(0 24px 32px #0007);animation:scene-in .8s cubic-bezier(.2,.7,.2,1) both}
 @keyframes scene-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 .light{opacity:0;transition:opacity .5s}
@@ -145,7 +145,7 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
       <stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="#dfe4ed"/><stop offset=".58" stop-color="#7f8795"/><stop offset="1" stop-color="#303541"/>
     </radialGradient>
     <radialGradient id="roomAura" cx=".34" cy=".48" r=".72">
-      <stop offset="0" stop-color="#596273" stop-opacity=".24"/><stop offset=".42" stop-color="#303847" stop-opacity=".13"/><stop offset="1" stop-color="#0a0b0f" stop-opacity="0"/>
+      <stop offset="0" stop-color="#6b778b" stop-opacity=".34"/><stop offset=".42" stop-color="#3e4859" stop-opacity=".2"/><stop offset="1" stop-color="#0a0b0f" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="ballG" cx=".32" cy=".24" r=".86">
       <stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".24" stop-color="#fff" stop-opacity=".22"/><stop offset=".58" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#10151e" stop-opacity=".48"/>
@@ -167,6 +167,8 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
   </defs>
 
   <ellipse cx="200" cy="300" rx="210" ry="294" fill="url(#roomAura)"/>
+  <path d="M0 544 Q200 527 400 544 V600 H0 Z" fill="url(#floorSurface)" opacity=".68"/>
+  <path d="M0 544 Q200 527 400 544" fill="none" stroke="#8a94a6" stroke-opacity=".2" stroke-width="1.2"/>
   <ellipse cx="200" cy="579" rx="215" ry="30" fill="url(#floorSurface)"/>
   <path d="M8 586 Q200 576 392 586" fill="none" stroke="#6e7788" stroke-opacity=".28" stroke-width="1.2"/>
   <path d="M22 593 Q200 586 378 593" fill="none" stroke="#8790a0" stroke-opacity=".1" stroke-width="1"/>
