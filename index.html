@@ -39,6 +39,11 @@ body[data-on="true"] #bulb{fill:color-mix(in srgb,var(--c) 35%,#fff);opacity:1;f
 #toy{cursor:grab;touch-action:none;outline:none}
 #toy:focus-visible{filter:drop-shadow(0 0 5px var(--c))}
 #toy.dragging{cursor:grabbing}
+#toyShadow{pointer-events:none}
+#toyShadow .cast-shadow,#toyShadow .contact-shadow{transform-box:fill-box;transform-origin:center;transition:transform .26s ease,opacity .26s ease}
+#toyShadow .cast-shadow{filter:url(#soft)}
+#toyShadow.raised .cast-shadow{transform:scale(1.24,.58);opacity:.34}
+#toyShadow.raised .contact-shadow{transform:scale(.72,.8);opacity:.5}
 .toy-motion{transform-box:view-box;transform-origin:0 0}
 .toy-motion.bounce{animation:toy-bounce .56s cubic-bezier(.3,.05,.25,1)}
 @keyframes toy-bounce{0%{transform:translateY(0) rotate(0) scale(1)}28%{transform:translateY(-30px) rotate(-12deg) scale(.98,1.02)}52%{transform:translateY(0) rotate(9deg) scale(1.04,.96)}70%{transform:translateY(-10px) rotate(-4deg) scale(.99,1.01)}100%{transform:translateY(0) rotate(0) scale(1)}}
@@ -216,8 +221,11 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
   </g>
 
   <!-- pelota de juguete -->
+  <g id="toyShadow" transform="translate(300 556)" aria-hidden="true">
+    <ellipse class="cast-shadow" cx="45" cy="38" rx="38" ry="3.8" fill="url(#bsh)" opacity=".68"/>
+    <ellipse class="contact-shadow" cx="0" cy="31.5" rx="16" ry="2" fill="#03050a" opacity=".6"/>
+  </g>
   <g id="toy" transform="translate(300 556)" role="button" tabindex="0" aria-label="Pelota de juguete. Toca para hacerla rebotar o arrástrala para moverla.">
-    <ellipse class="bsh" cx="54" cy="28" rx="63" ry="7" fill="url(#bsh)"/><ellipse cx="0" cy="29" rx="24" ry="4" fill="#000" opacity=".36"/>
     <g class="toy-motion" id="toyMotion">
       <g clip-path="url(#ballClip)">
         <circle r="29" fill="#71d7c5"/>
@@ -369,12 +377,12 @@ pull.addEventListener("pointerup",releasePull);pull.addEventListener("pointercan
 knob.addEventListener("keydown",e=>{
   if(e.key==="Enter"||e.key===" "){e.preventDefault();setPull(24);setTimeout(()=>setPull(0),150);toggle();swingVelocity=.9;lastFrame=0;cancelAnimationFrame(swingFrame);swingFrame=requestAnimationFrame(animateSwing)}
 });
-const toy=document.getElementById("toy"),toyMotion=document.getElementById("toyMotion");
+const toy=document.getElementById("toy"),toyMotion=document.getElementById("toyMotion"),toyShadow=document.getElementById("toyShadow");
 let toyX=300,toyRotation=0,toyStart=null,toyStartX=300,toyMoved=false,toyLastX=0;
-function bounceToy(){toyMotion.classList.remove("bounce");void toyMotion.getBoundingClientRect();toyMotion.classList.add("bounce")}
-toyMotion.addEventListener("animationend",()=>toyMotion.classList.remove("bounce"));
+function bounceToy(){toyShadow.classList.add("raised");toyMotion.classList.remove("bounce");void toyMotion.getBoundingClientRect();toyMotion.classList.add("bounce")}
+toyMotion.addEventListener("animationend",()=>{toyMotion.classList.remove("bounce");toyShadow.classList.remove("raised")});
 toy.addEventListener("pointerdown",e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();toyStart=svgPoint(e);toyStartX=toyX;toyLastX=toyStart.x;toyMoved=false;toy.setPointerCapture(e.pointerId);toy.classList.add("dragging")});
-toy.addEventListener("pointermove",e=>{if(!toyStart)return;const p=svgPoint(e),delta=p.x-toyStart.x;if(Math.abs(delta)>5)toyMoved=true;if(toyMoved){toyX=clamp(toyStartX+delta,218,355);toyRotation+=(p.x-toyLastX)*1.4;toyLastX=p.x;toy.setAttribute("transform",`translate(${toyX} 556) rotate(${toyRotation})`)}});
+toy.addEventListener("pointermove",e=>{if(!toyStart)return;const p=svgPoint(e),delta=p.x-toyStart.x;if(Math.abs(delta)>5)toyMoved=true;if(toyMoved){toyX=clamp(toyStartX+delta,218,355);toyRotation+=(p.x-toyLastX)*1.4;toyLastX=p.x;toy.setAttribute("transform",`translate(${toyX} 556) rotate(${toyRotation})`);toyShadow.setAttribute("transform",`translate(${toyX} 556)`)}});
 function releaseToy(){if(!toyStart)return;toy.classList.remove("dragging");if(!toyMoved)bounceToy();toyStart=null}
 toy.addEventListener("pointerup",releaseToy);toy.addEventListener("pointercancel",releaseToy);
 toy.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();bounceToy()}});
