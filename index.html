@@ -184,12 +184,12 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
   <h1 id="title">Bienvenido</h1>
   <p class="sub">Inicia sesión para continuar</p>
   <div class="tabs"><button class="tab on" data-m="in" type="button">Entrar</button><button class="tab" data-m="up" type="button">Registro</button></div>
-  <form id="form" autocomplete="off">
-    <div id="mailRow" hidden><label for="mail">Correo</label><div class="f"><input id="mail" type="email" placeholder="tu@correo.com"></div></div>
+  <form id="form" autocomplete="on">
+    <div id="mailRow" hidden><label for="mail">Correo</label><div class="f"><input id="mail" type="email" autocomplete="email" placeholder="tu@correo.com"></div></div>
     <label for="user">Usuario o correo</label>
-    <div class="f"><input id="user" type="text" placeholder="MiUsuario"></div>
+    <div class="f"><input id="user" type="text" autocomplete="username" required placeholder="MiUsuario"></div>
     <label for="pw">Contraseña</label>
-    <div class="f"><input id="pw" type="password" placeholder="••••••••"><button class="eye" id="eye" type="button" aria-label="Mostrar contraseña">👁</button></div>
+    <div class="f"><input id="pw" type="password" autocomplete="current-password" required placeholder="••••••••"><button class="eye" id="eye" type="button" aria-label="Mostrar contraseña">👁</button></div>
     <div class="meta"><label style="margin:0"><input type="checkbox" checked>Recordarme</label><a href="#" onclick="return false">¿Olvidaste?</a></div>
     <button class="go" id="go" type="submit">Entrar →</button>
     <p class="msg" id="msg"></p>
@@ -203,21 +203,28 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
 
 <script>
 const root=document.documentElement;
+const readPref=(key,fallback)=>{try{return localStorage.getItem(key)||fallback}catch{return fallback}};
+const savePref=(key,value)=>{try{localStorage.setItem(key,value)}catch{}};
+root.style.setProperty("--shade",readPref("lamp-shade","#ece9e2"));
+root.style.setProperty("--c",readPref("lamp-light","hsl(37.5, 100%, 60%)"));
 const shades=["#ece9e2","#f2b8c6","#9fd3d6","#f3d089","#2a2e37"];
 const lights=["#ffb84a","#ff5fa2","#5ee7ff","#7dff9b","#b388ff"];
 function dots(id,list,v){
   const box=document.getElementById(id);
+  const selected=getComputedStyle(root).getPropertyValue(v).trim().toLowerCase();
   list.forEach((col,i)=>{
+    const active=col.toLowerCase()===selected;
     const b=document.createElement("button");
-    b.className="dot"+(i===0?" sel":""); b.style.background=col; b.setAttribute("aria-label","Color "+(i+1));
-    b.onclick=()=>{root.style.setProperty(v,col);box.querySelectorAll(".dot").forEach(d=>d.classList.remove("sel"));b.classList.add("sel")};
+    b.className="dot"+(active?" sel":""); b.style.background=col; b.setAttribute("aria-label","Color "+col); b.setAttribute("aria-pressed",String(active));
+    b.onclick=()=>{root.style.setProperty(v,col);savePref(v==="--shade"?"lamp-shade":"lamp-light",col);box.querySelectorAll(".dot").forEach(d=>{d.classList.remove("sel");d.setAttribute("aria-pressed","false")});b.classList.add("sel");b.setAttribute("aria-pressed","true")};
     box.appendChild(b);
   });
 }
 dots("shades",shades,"--shade"); const wheel=document.getElementById("wheel"),SV="http://www.w3.org/2000/svg";
 let cur=null,init=null;
-function pick(el,col){
+function pick(el,col,save=true){
   root.style.setProperty("--c",col);
+  if(save)savePref("lamp-light",col);
   if(cur){cur.style.stroke="";cur.style.strokeWidth=""}
   cur=el; el.style.stroke="#fff"; el.style.strokeWidth="1.8"; wheel.appendChild(el);
 }
@@ -227,15 +234,17 @@ for(let k=0;k<5;k++)for(let i=0;i<24;i++){
   const r1=68-k*11.2,r0=r1-11.2,a0=(i*15-90)*Math.PI/180,a1=((i+1)*15-90)*Math.PI/180;
   const col=`hsl(${i*15+7.5},100%,${Ls[k]}%)`,p=document.createElementNS(SV,"path");
   p.setAttribute("d",`M${P(r1,a0)}A${r1} ${r1} 0 0 1 ${P(r1,a1)}L${P(r0,a1)}A${r0} ${r0} 0 0 0 ${P(r0,a0)}Z`);
-  p.setAttribute("fill",col); p.style.cursor="pointer";
+  p.setAttribute("fill",col); p.setAttribute("role","button"); p.setAttribute("tabindex","0"); p.setAttribute("aria-label","Luz "+col); p.style.cursor="pointer";
   p.addEventListener("click",()=>pick(p,col));
   wheel.appendChild(p);
   if(i===2&&k===1)init=[p,col];
 }
 const mid=document.createElementNS(SV,"circle");
-mid.setAttribute("r",12); mid.setAttribute("fill","#fff"); mid.style.cursor="pointer";
+mid.setAttribute("r",12); mid.setAttribute("fill","#fff"); mid.setAttribute("role","button"); mid.setAttribute("tabindex","0"); mid.setAttribute("aria-label","Luz blanca"); mid.style.cursor="pointer";
 mid.addEventListener("click",()=>pick(mid,"#ffffff")); wheel.appendChild(mid);
-pick(init[0],init[1]);
+const storedLight=readPref("lamp-light","");
+pick(init[0],storedLight||init[1],false);
+wheel.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("path,circle")){e.preventDefault();e.target.dispatchEvent(new MouseEvent("click",{bubbles:true}))}});
 
 /* la rueda se oculta sola */
 const row=document.querySelector(".panel");
@@ -297,12 +306,14 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));
   const up=t.dataset.m==="up";
   document.getElementById("mailRow").hidden=!up;
+  document.getElementById("mail").required=up;
+  pw.autocomplete=up?"new-password":"current-password";
   document.getElementById("go").textContent=up?"Crear cuenta →":"Entrar →";
   document.getElementById("title").textContent=up?"Crea tu cuenta":"Bienvenido";
   msg.textContent="";
 });
 const pw=document.getElementById("pw");
-document.getElementById("eye").onclick=()=>{pw.type=pw.type==="password"?"text":"password"};
+document.getElementById("eye").onclick=()=>{const show=pw.type==="password";pw.type=show?"text":"password";document.getElementById("eye").setAttribute("aria-label",show?"Ocultar contraseña":"Mostrar contraseña")};
 document.getElementById("form").onsubmit=e=>{e.preventDefault();msg.textContent="Demostración: aquí conectarías tu servidor."};
 </script>
 </body>
