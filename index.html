@@ -35,7 +35,13 @@ body[data-on="true"] #bulb{fill:color-mix(in srgb,var(--c) 35%,#fff);opacity:1;f
 .arm{stroke:url(#metalFinish);stroke-linecap:round}.armo{stroke:color-mix(in srgb,var(--shade) 52%,#000);stroke-linecap:round}.arm,.armo{fill:none}.arm-glint{fill:none;stroke:#fff;stroke-opacity:.48;stroke-width:1.1;stroke-linecap:round;pointer-events:none}
 .bd,.tp,.arm,.armo,#shade{transition:fill .4s,stroke .4s}
 .bsh{opacity:.3;transition:opacity .6s}body[data-on="true"] .bsh{opacity:1}
-.pull{cursor:grab}
+.pull{cursor:grab;touch-action:none}
+#toy{cursor:grab;touch-action:none;outline:none}
+#toy:focus-visible{filter:drop-shadow(0 0 5px var(--c))}
+#toy.dragging{cursor:grabbing}
+.toy-motion{transform-box:view-box;transform-origin:0 0}
+.toy-motion.bounce{animation:toy-bounce .56s cubic-bezier(.3,.05,.25,1)}
+@keyframes toy-bounce{0%{transform:translateY(0) rotate(0) scale(1)}28%{transform:translateY(-30px) rotate(-12deg) scale(.98,1.02)}52%{transform:translateY(0) rotate(9deg) scale(1.04,.96)}70%{transform:translateY(-10px) rotate(-4deg) scale(.99,1.01)}100%{transform:translateY(0) rotate(0) scale(1)}}
 #cord{transform-box:fill-box;transform-origin:top;transition:transform .28s cubic-bezier(.3,1.6,.5,1)}
 #knob{transition:transform .28s cubic-bezier(.3,1.6,.5,1)}
 .drag #cord,.drag #knob{transition:none}
@@ -136,6 +142,8 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
     <radialGradient id="pool"><stop offset="0" style="stop-color:var(--c);stop-opacity:.65"/><stop offset=".6" style="stop-color:var(--c);stop-opacity:.3"/><stop offset="1" style="stop-color:var(--c);stop-opacity:0"/></radialGradient>
     <clipPath id="beamClip"><polygon transform="translate(210 266) rotate(-40)" points="-60,0 60,0 175,460 -175,460"/></clipPath>
     <linearGradient id="bsh" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".85"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+    <linearGradient id="floorSurface" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#202633" stop-opacity=".28"/><stop offset=".38" stop-color="#11151e" stop-opacity=".78"/><stop offset="1" stop-color="#090b11" stop-opacity=".1"/></linearGradient>
+    <radialGradient id="groundLight" cx=".46" cy=".45" r=".65"><stop offset="0" style="stop-color:var(--c);stop-opacity:.25"/><stop offset=".45" style="stop-color:var(--c);stop-opacity:.11"/><stop offset="1" stop-color="#10151e" stop-opacity="0"/></radialGradient>
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter>
     <filter id="haze" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
     <g id="bars">
@@ -144,6 +152,9 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
     </g>
   </defs>
 
+  <ellipse cx="200" cy="579" rx="215" ry="30" fill="url(#floorSurface)"/>
+  <path d="M8 586 Q200 576 392 586" fill="none" stroke="#414957" stroke-opacity=".24" stroke-width="1"/>
+  <ellipse class="light" cx="265" cy="575" rx="174" ry="28" fill="url(#groundLight)" filter="url(#haze)"/>
   <g class="light" mask="url(#floorMask)"><g transform="translate(210 266) rotate(-40)">
     <g id="rays" filter="url(#soft)"></g>
     <polygon points="-60,0 60,0 160,460 -160,460" fill="url(#cone)" opacity=".35"/>
@@ -195,24 +206,31 @@ label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
 
   <!-- cadena -->
   <g class="pull" id="pull">
-    <line id="cord" x1="164" y1="306" x2="164" y2="416" stroke="#9aa0ad" stroke-width="2.2" stroke-dasharray="1.6 2.6" stroke-linecap="round"/>
-    <path id="knob" d="M164,418 C171,428 172,436 164,440 C156,436 157,428 164,418 Z" fill="#c9ccd4" tabindex="0" role="button" aria-label="Jalar la cadena para encender o apagar"/>
+    <g id="cordSwing">
+      <line id="cord" x1="164" y1="306" x2="164" y2="416" stroke="#9aa0ad" stroke-width="2.2" stroke-dasharray="1.6 2.6" stroke-linecap="round"/>
+      <path d="M164 306v110" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width=".65"/>
+      <circle cx="164" cy="430" r="18" fill="transparent" pointer-events="all"/>
+      <path id="knob" d="M164,418 C171,428 172,436 164,440 C156,436 157,428 164,418 Z" fill="url(#bolt)" stroke="#565d69" stroke-width=".9" tabindex="0" role="button" aria-label="Jalar la cadena para encender o apagar"/>
+      <path d="M161 423q3-3 5 0" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="1.1" stroke-linecap="round" pointer-events="none"/>
+    </g>
   </g>
 
   <!-- pelota de juguete -->
-  <g transform="translate(300 556)">
+  <g id="toy" transform="translate(300 556)" role="button" tabindex="0" aria-label="Pelota de juguete. Toca para hacerla rebotar o arrástrala para moverla.">
     <ellipse class="bsh" cx="54" cy="28" rx="63" ry="7" fill="url(#bsh)"/><ellipse cx="0" cy="29" rx="24" ry="4" fill="#000" opacity=".36"/>
-    <g clip-path="url(#ballClip)">
-      <circle r="29" fill="#71d7c5"/>
-      <path d="M-32,-9 Q0,-37 32,-5" fill="none" stroke="#23365f" stroke-width="13" stroke-linecap="round"/>
-      <path d="M-28,-12 Q0,-34 28,-7" fill="none" stroke="#7f91c2" stroke-opacity=".7" stroke-width="1.5" stroke-linecap="round"/>
-      <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="#f16052" stroke="#7c2b35" stroke-width="2" stroke-linejoin="round" transform="translate(-3 8) scale(.92)"/>
-      <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width=".8" stroke-linejoin="round" transform="translate(-3 7.5) scale(.92)"/>
-      <path d="M-27,13 Q-12,24 5,20 M8,-22 Q18,-18 24,-8" fill="none" stroke="#e7fffb" stroke-opacity=".65" stroke-width="1.25" stroke-linecap="round"/>
-      <ellipse cx="-10" cy="-16" rx="8" ry="3.2" transform="rotate(-32 -10 -16)" fill="#fff" opacity=".58" filter="url(#soft)"/>
-      <circle r="29" fill="url(#ballG)"/>
-      <circle r="28.5" fill="none" stroke="#e5fff8" stroke-opacity=".55" stroke-width="1"/>
-      <g class="light"><circle r="29" style="fill:var(--c);fill-opacity:.15"/></g>
+    <g class="toy-motion" id="toyMotion">
+      <g clip-path="url(#ballClip)">
+        <circle r="29" fill="#71d7c5"/>
+        <path d="M-32,-9 Q0,-37 32,-5" fill="none" stroke="#23365f" stroke-width="13" stroke-linecap="round"/>
+        <path d="M-28,-12 Q0,-34 28,-7" fill="none" stroke="#7f91c2" stroke-opacity=".7" stroke-width="1.5" stroke-linecap="round"/>
+        <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="#f16052" stroke="#7c2b35" stroke-width="2" stroke-linejoin="round" transform="translate(-3 8) scale(.92)"/>
+        <polygon points="0,-11 2.6,-3.6 10.5,-3.4 4.3,1.4 6.5,8.9 0,4.5 -6.5,8.9 -4.3,1.4 -10.5,-3.4 -2.6,-3.6" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width=".8" stroke-linejoin="round" transform="translate(-3 7.5) scale(.92)"/>
+        <path d="M-27,13 Q-12,24 5,20 M8,-22 Q18,-18 24,-8" fill="none" stroke="#e7fffb" stroke-opacity=".65" stroke-width="1.25" stroke-linecap="round"/>
+        <ellipse cx="-10" cy="-16" rx="8" ry="3.2" transform="rotate(-32 -10 -16)" fill="#fff" opacity=".58" filter="url(#soft)"/>
+        <circle r="29" fill="url(#ballG)"/>
+        <circle r="28.5" fill="none" stroke="#e5fff8" stroke-opacity=".55" stroke-width="1"/>
+        <g class="light"><circle r="29" style="fill:var(--c);fill-opacity:.15"/></g>
+      </g>
     </g>
   </g>
 </svg>
@@ -308,22 +326,58 @@ function toggle(){
   setTimeout(wheelShow,40);
   document.getElementById("hint").textContent=on?"Toca o pasa el mouse sobre la esquina para elegir el color de la luz, o jala la cadena para apagar":"Jala la cadena para encender";
 }
-const knob=document.getElementById("knob"),cord=document.getElementById("cord"),pull=document.getElementById("pull"),svg=document.querySelector("svg");
-function setPull(dy){knob.style.transform=`translateY(${dy}px)`;cord.style.transform=`scaleY(${(110+dy)/110})`}
-let drag=false,y0=0,dy=0;
-knob.addEventListener("pointerdown",e=>{drag=true;y0=e.clientY;dy=0;knob.setPointerCapture(e.pointerId);pull.classList.add("drag")});
-knob.addEventListener("pointermove",e=>{
+const knob=document.getElementById("knob"),cord=document.getElementById("cord"),pull=document.getElementById("pull"),cordSwing=document.getElementById("cordSwing"),svg=document.querySelector("svg");
+function setPull(amount){knob.style.transform=`translateY(${amount}px)`;cord.style.transform=`scaleY(${(110+amount)/110})`}
+const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+function svgPoint(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+let drag=false,dy=0,swingAngle=0,swingVelocity=0,swingFrame=0,lastFrame=0,startPoint=null,lastPointerAngle=0,lastPointerTime=0,moved=0;
+function paintSwing(){cordSwing.setAttribute("transform",`rotate(${swingAngle*180/Math.PI} 164 306)`)}
+function animateSwing(now){
+  if(drag)return;
+  if(!lastFrame)lastFrame=now;
+  const dt=Math.min((now-lastFrame)/1000,.032);lastFrame=now;
+  swingVelocity+=(-7.2*Math.sin(swingAngle)-1.18*swingVelocity)*dt;
+  swingAngle+=swingVelocity*dt;
+  paintSwing();
+  if(Math.abs(swingAngle)>.003||Math.abs(swingVelocity)>.008){swingFrame=requestAnimationFrame(animateSwing)}
+  else{swingAngle=0;swingVelocity=0;lastFrame=0;paintSwing()}
+}
+pull.addEventListener("pointerdown",e=>{
+  if(e.button!==undefined&&e.button!==0)return;
+  e.preventDefault();drag=true;dy=0;moved=0;startPoint=svgPoint(e);
+  const point=svgPoint(e);lastPointerAngle=Math.atan2(point.x-164,point.y-306);lastPointerTime=e.timeStamp;
+  swingVelocity=0;pull.setPointerCapture(e.pointerId);pull.classList.add("drag")
+});
+pull.addEventListener("pointermove",e=>{
   if(!drag)return;
-  const k=600/svg.getBoundingClientRect().height;
-  dy=Math.max(0,Math.min(40,(e.clientY-y0)*k)); setPull(dy);
+  const p=svgPoint(e),radius=Math.hypot(p.x-164,p.y-306),next=clamp(Math.atan2(p.x-164,p.y-306),-1.38,1.38);
+  const dt=Math.max(.008,(e.timeStamp-lastPointerTime)/1000);
+  swingVelocity=clamp((next-lastPointerAngle)/dt,-7,7);swingAngle=next;
+  lastPointerAngle=next;lastPointerTime=e.timeStamp;
+  moved=Math.hypot(p.x-startPoint.x,p.y-startPoint.y);
+  dy=clamp(radius-124,0,40);setPull(dy);paintSwing()
 });
-knob.addEventListener("pointerup",()=>{
-  if(!drag)return; drag=false; pull.classList.remove("drag");
-  if(dy>14||dy<3)toggle(); setPull(0);
-});
+function releasePull(e){
+  if(!drag)return;
+  drag=false;pull.classList.remove("drag");
+  const tappedHandle=startPoint&&Math.hypot(startPoint.x-164,startPoint.y-430)<19&&moved<8;
+  if(dy>14||tappedHandle)toggle();
+  if(dy>14&&Math.abs(swingAngle)<.06)swingVelocity+=.85;
+  setPull(0);lastFrame=0;cancelAnimationFrame(swingFrame);swingFrame=requestAnimationFrame(animateSwing)
+}
+pull.addEventListener("pointerup",releasePull);pull.addEventListener("pointercancel",releasePull);
 knob.addEventListener("keydown",e=>{
-  if(e.key==="Enter"||e.key===" "){e.preventDefault();setPull(24);setTimeout(()=>setPull(0),150);toggle()}
+  if(e.key==="Enter"||e.key===" "){e.preventDefault();setPull(24);setTimeout(()=>setPull(0),150);toggle();swingVelocity=.9;lastFrame=0;cancelAnimationFrame(swingFrame);swingFrame=requestAnimationFrame(animateSwing)}
 });
+const toy=document.getElementById("toy"),toyMotion=document.getElementById("toyMotion");
+let toyX=300,toyRotation=0,toyStart=null,toyStartX=300,toyMoved=false,toyLastX=0;
+function bounceToy(){toyMotion.classList.remove("bounce");void toyMotion.getBoundingClientRect();toyMotion.classList.add("bounce")}
+toyMotion.addEventListener("animationend",()=>toyMotion.classList.remove("bounce"));
+toy.addEventListener("pointerdown",e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();toyStart=svgPoint(e);toyStartX=toyX;toyLastX=toyStart.x;toyMoved=false;toy.setPointerCapture(e.pointerId);toy.classList.add("dragging")});
+toy.addEventListener("pointermove",e=>{if(!toyStart)return;const p=svgPoint(e),delta=p.x-toyStart.x;if(Math.abs(delta)>5)toyMoved=true;if(toyMoved){toyX=clamp(toyStartX+delta,218,355);toyRotation+=(p.x-toyLastX)*1.4;toyLastX=p.x;toy.setAttribute("transform",`translate(${toyX} 556) rotate(${toyRotation})`)}});
+function releaseToy(){if(!toyStart)return;toy.setPointerCapture&&toy.hasPointerCapture&&toy.releasePointerCapture;toy.classList.remove("dragging");if(!toyMoved)bounceToy();toyStart=null}
+toy.addEventListener("pointerup",releaseToy);toy.addEventListener("pointercancel",releaseToy);
+toy.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();bounceToy()}});
 
 /* rayos del haz */
 const NS="http://www.w3.org/2000/svg",rays=document.getElementById("rays");
